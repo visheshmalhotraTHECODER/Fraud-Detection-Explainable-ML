@@ -1,184 +1,174 @@
-# 🔍 Fraud Detection with Explainable AI (XAI)
+# Fraud Detection & Explainable Machine Learning
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![XGBoost](https://img.shields.io/badge/model-XGBoost-orange.svg)](https://xgboost.readthedocs.io/)
-[![SHAP](https://img.shields.io/badge/explainability-SHAP-green.svg)](https://shap.readthedocs.io/)
-[![Streamlit](https://img.shields.io/badge/app-Streamlit-red.svg)](https://streamlit.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+An end-to-end machine-learning demonstration for classifying synthetic financial transactions and explaining model predictions with SHAP. The repository includes data generation, preprocessing, model training, evaluation, explanation utilities and a Streamlit interface.
 
-An end-to-end machine learning pipeline for **detecting fraudulent financial transactions** with built-in **SHAP-based explainability**. Unlike black-box fraud detectors, this system tells you *why* each transaction was flagged — making it audit-ready and trustworthy for production deployment.
+> **Important:** The included pipeline generates synthetic data. Results from this dataset are for demonstrating the workflow only; they are not evidence of real-world banking or payment-fraud performance and must not be used to make live financial decisions.
 
-<p align="center">
-  <img src="docs/demo.gif" alt="Demo" width="800">
-</p>
+## What the project does
 
-## 🧠 Why Explainable AI Matters in Fraud Detection
+1. Generate a configurable synthetic transaction dataset (50,000 rows and a 2% fraud ratio by default).
+2. Split the data into training and test sets and preprocess the features.
+3. Handle class imbalance using the configured strategy (SMOTE by default).
+4. Train a configurable classifier: XGBoost, Random Forest or Logistic Regression.
+5. Evaluate predictions using metrics suited to imbalanced classification.
+6. Generate global and local feature explanations using SHAP.
+7. Save the trained model, preprocessing object, metrics and plots under `models/`.
+8. Load the artifacts in a Streamlit app for interactive transaction scoring and model exploration.
 
-Traditional ML models flag transactions as "fraud" or "not fraud" — but **regulators, compliance teams, and customers need to know why**. This project integrates [SHAP (SHapley Additive exPlanations)](https://shap.readthedocs.io/) to provide:
+## Features
 
-- **Global explanations** — Which features drive fraud detection overall?
-- **Local explanations** — Why was *this specific transaction* flagged?
-- **Audit trail** — Every prediction comes with a traceable feature contribution breakdown
+- Configurable synthetic data generation and random seed.
+- Standard, MinMax or Robust scaling options in the configuration.
+- SMOTE / ADASYN / no-resampling configuration.
+- XGBoost, Random Forest and Logistic Regression model options.
+- Precision, recall, F1, ROC-AUC, PR-AUC, specificity and confusion-matrix metrics.
+- SHAP global feature importance and per-transaction explanations.
+- Streamlit transaction analyzer and model dashboard.
+- Dockerfile and pytest pipeline tests.
 
-## 🏗️ Architecture
+## Pipeline architecture
 
-```
-┌──────────────┐    ┌────────────────┐    ┌──────────────┐    ┌────────────────┐
-│  Synthetic   │───▶│ Preprocessing  │───▶│   XGBoost    │───▶│     SHAP       │
-│  Data Gen    │    │  + SMOTE       │    │   Classifier │    │  Explainability │
-└──────────────┘    └────────────────┘    └──────────────┘    └────────────────┘
-       │                    │                     │                    │
-       ▼                    ▼                     ▼                    ▼
-  50K realistic       StandardScaler         Early stopping      Beeswarm plots
-  transactions        Stratified split       Class weighting     Waterfall plots
-  2% fraud ratio      SMOTE oversampling     PR-AUC optimized   Feature importance
-```
-
-## ✨ Features
-
-| Feature | Description |
-|---------|-------------|
-| **Realistic Data Generation** | 50K synthetic transactions with 20 engineered features simulating real fraud patterns |
-| **Class Imbalance Handling** | SMOTE/ADASYN oversampling with stratified splits |
-| **XGBoost Classifier** | Gradient-boosted trees with early stopping and PR-AUC optimization |
-| **SHAP Explainability** | TreeExplainer for global & local feature attributions |
-| **Interactive Demo** | Streamlit app with real-time scoring and visual explanations |
-| **Configurable Pipeline** | YAML-driven config for reproducible experiments |
-| **Docker Support** | One-command deployment with Dockerfile |
-| **Test Suite** | pytest-based unit tests covering the full pipeline |
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.11+
-- pip or conda
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/tokumag/fraud-detection-xai.git
-cd fraud-detection-xai
-
-# Create virtual environment (recommended)
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+```text
+Synthetic transaction generator
+          |
+          v
+Preprocessing + train/test split
+          |
+          v
+Class-imbalance handling
+          |
+          v
+Configured classifier
+          |
+          +----> Evaluation metrics
+          |
+          v
+SHAP explainability
+          |
+          v
+Saved model + preprocessor + metrics
+          |
+          v
+Streamlit dashboard
 ```
 
-### Train the Model
+## Tech stack
 
-```bash
-python train.py
-```
+| Area | Technology |
+|---|---|
+| Language / data | Python, NumPy, Pandas |
+| Machine learning | scikit-learn, XGBoost |
+| Imbalanced learning | imbalanced-learn (SMOTE / ADASYN) |
+| Explainability | SHAP, LIME dependency |
+| Visualization | Matplotlib, Seaborn, Plotly |
+| Interactive app | Streamlit |
+| Model persistence | Joblib |
+| Configuration | YAML |
+| Testing | pytest |
+| Containerization | Docker |
 
-This will:
-1. Generate 50K synthetic transactions (2% fraud rate)
-2. Preprocess with StandardScaler + SMOTE oversampling
-3. Train an XGBoost classifier with early stopping
-4. Evaluate with precision, recall, F1, ROC-AUC, PR-AUC
-5. Generate SHAP explainability plots
-6. Save all artifacts to `models/`
+## Run locally (Windows PowerShell)
 
-### Launch the Demo App
+**Prerequisites:** Python 3.11+ and pip.
 
-```bash
-streamlit run app.py
-```
+1. Clone the repository:
 
-### Docker
+   ```powershell
+   git clone https://github.com/visheshmalhotraTHECODER/Fraud-Detection-Explainable-ML.git
+   cd Fraud-Detection-Explainable-ML
+   ```
 
-```bash
-docker build -t fraud-detection-xai .
-docker run -p 8501:8501 fraud-detection-xai
-```
+2. Create and activate a virtual environment:
 
-## 📊 Model Performance
+   ```powershell
+   py -3.11 -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
 
-| Metric | Score |
-|--------|-------|
-| ROC-AUC | ~0.99 |
-| PR-AUC | ~0.98 |
-| Precision | ~0.95 |
-| Recall | ~0.96 |
-| F1 Score | ~0.95 |
+3. Install dependencies:
 
-> **Note:** Scores are on synthetic data and serve to validate the pipeline.
-> Real-world performance would depend on the production dataset.
+   ```powershell
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
 
-## 📂 Project Structure
+4. Train the model and generate artifacts:
 
-```
-fraud-detection-xai/
-├── app.py                  # Streamlit interactive demo
-├── train.py                # Training pipeline entry point
-├── config.yaml             # Experiment configuration
-├── requirements.txt        # Python dependencies
-├── Dockerfile              # Container deployment
-├── src/
-│   ├── __init__.py
-│   ├── data_loader.py      # Synthetic data generation
-│   ├── preprocessor.py     # Scaling + SMOTE pipeline
-│   ├── model.py            # Model training & evaluation
-│   └── explainer.py        # SHAP explainability engine
-├── tests/
-│   └── test_pipeline.py    # Unit test suite
-├── data/                   # Generated datasets (git-ignored)
-└── models/                 # Trained model artifacts (git-ignored)
-```
+   ```powershell
+   python train.py
+   ```
 
-## 🔧 Configuration
+   The default configuration creates synthetic data and writes model artifacts under `models/`. Training may take several minutes depending on your machine.
 
-All hyperparameters are controlled via `config.yaml`:
+5. Launch the dashboard:
 
-```yaml
-model:
-  algorithm: xgboost         # xgboost | random_forest | logistic_regression
-  xgboost:
-    n_estimators: 300
-    max_depth: 6
-    learning_rate: 0.1
-    scale_pos_weight: auto   # Auto-calculated from class ratio
-    eval_metric: aucpr
-```
+   ```powershell
+   streamlit run app.py
+   ```
 
-## 🧪 Testing
+6. Open the local URL printed by Streamlit (normally [http://localhost:8501](http://localhost:8501)).
 
-```bash
+## Configuration
+
+Edit [config.yaml](config.yaml) to change:
+
+- Dataset size, fraud ratio and random seed.
+- Test-set size, scaling method and imbalance strategy.
+- Model family and hyperparameters.
+- SHAP sample count and number of top features.
+- Artifact output paths.
+
+## Evaluation
+
+The training script calculates:
+
+| Metric | Why it matters |
+|---|---|
+| Precision | How many predicted fraud cases are actually fraud in the test data |
+| Recall | How many fraud cases in the test data are detected |
+| F1 | Harmonic mean of precision and recall |
+| ROC-AUC | Ranking quality across classification thresholds |
+| PR-AUC | Precision-recall performance, useful for imbalanced data |
+| Specificity | How many legitimate cases are correctly identified |
+
+Do not compare these synthetic-data metrics directly with published production fraud-detection results. A realistic evaluation requires a representative, time-aware dataset, leakage checks, threshold selection, calibration and monitoring.
+
+## Tests
+
+```powershell
 python -m pytest tests/ -v
 ```
 
-## 🛠️ Tech Stack
+## Repository layout
 
-- **ML Framework:** scikit-learn, XGBoost
-- **Explainability:** SHAP, LIME
-- **Imbalanced Learning:** imbalanced-learn (SMOTE, ADASYN)
-- **Visualization:** Matplotlib, Seaborn, Plotly
-- **App Framework:** Streamlit
-- **Containerization:** Docker
+```text
+app.py                  # Streamlit interface
+train.py                # End-to-end training entry point
+config.yaml             # Pipeline and model configuration
+requirements.txt        # Python dependencies
+src/
+  data_loader.py        # Synthetic data generation and loading
+  preprocessor.py       # Scaling and imbalance handling
+  model.py              # Model building, training and evaluation
+  explainer.py          # SHAP explanations and plots
+tests/
+  test_pipeline.py      # Pipeline tests
+data/                   # Generated dataset (not committed)
+models/                 # Generated model artifacts (not committed)
+```
 
-## 📈 Future Enhancements
+## Limitations and responsible use
 
-- [ ] Add real-world dataset support (Kaggle Credit Card Fraud)
-- [ ] Implement LIME explanations alongside SHAP
-- [ ] Add model comparison dashboard (XGBoost vs. RF vs. LR)
-- [ ] Deploy to Streamlit Cloud / Hugging Face Spaces
-- [ ] Add API endpoint with FastAPI
-- [ ] Integrate MLflow for experiment tracking
+- The default data is synthetic and may not represent real transaction behavior.
+- High scores on generated data do not establish generalization to unseen real fraud patterns.
+- SHAP explains model behavior; it does not establish causality or prove that a prediction is correct.
+- Do not upload personal, payment-card or confidential transaction data to this demo.
+- A production fraud system would need privacy controls, secure data handling, drift monitoring, human review, model governance and independent validation.
 
-## 📄 License
+## Attribution and license
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This repository adapts **[fraud-detection-xai](https://github.com/tokumag/fraud-detection-xai)** by **[Tokuma Gebissa](https://github.com/tokumag)**. The upstream MIT license and copyright notice are retained in [LICENSE](LICENSE).
 
-## 👤 Author
+**Portfolio maintainer:** [Vishesh Malhotra](https://github.com/visheshmalhotraTHECODER).
 
-**Tokuma Gebissa** — AI Engineering Student
-
-- GitHub: [@tokumag](https://github.com/tokumag)
-- LinkedIn: [Connect with me](https://linkedin.com/in/)
-
----
-
-*Built with ❤️ as part of an AI Engineering portfolio. If you found this useful, consider giving it a ⭐!*
+Please preserve the upstream copyright and license notice when redistributing this adaptation.
